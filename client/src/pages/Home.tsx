@@ -195,8 +195,8 @@ export default function Home() {
 
   // ─── Pan map so marker lands at ~1/3 from top of the VISIBLE area above sheet ───
   // Strategy: use map.panBy() after panTo() to shift the view downward by the
-  // amount needed to move the marker from screen-centre up to 1/3 from top.
-  // visible map height = window.innerHeight * 2/3 (sheet is 1/3)
+  // amount needed to move the marker from screen-centre up into the visible map area.
+  // visible map height = window.innerHeight * 1/2 (sheet is 1/2)
   // target y = visibleHeight / 3  (1/3 from top of visible area)
   // current y = window.innerHeight / 2  (panTo puts it at screen centre)
   // panBy offset = target_y - current_y  (positive = pan down = marker moves up)
@@ -206,13 +206,13 @@ export default function Home() {
     // First pan to the location (centres it on full screen)
     map.panTo({ lat, lng });
     if (!mobile) return;
-    // Then shift: marker should sit at 1/3 from top of visible map (top 2/3 of screen)
-    // visible map height = 2/3 of screen; target = 1/3 of that from top
-    // = window.innerHeight * 2/3 * 1/3 = window.innerHeight * 2/9
+    // Then shift: marker should sit at 1/3 from top of visible map (top 1/2 of screen)
+    // visible map height = 1/2 of screen; target = 1/3 of that from top
+    // = window.innerHeight * 1/2 * 1/3 = window.innerHeight * 1/6
     // screen centre = window.innerHeight / 2
     // positive panBy y = pan map down = marker moves up
     const screenH = window.innerHeight;
-    const targetY = screenH * (2 / 9);          // 1/3 from top of visible area
+    const targetY = screenH * (1 / 6);          // 1/3 from top of visible area
     const centreY = screenH / 2;                 // where panTo puts the marker
     const dy = Math.round(centreY - targetY);    // how many px to pan the map down
     // Small delay so panTo finishes before panBy
@@ -416,9 +416,9 @@ export default function Home() {
 
   // ─── MOBILE LAYOUT ──────────────────────────────────────────────────────────
   if (isMobile) {
-    // Sheet height constants — all content states use exactly 1/3 of screen
+    // Sheet height constants — all content states use exactly 1/2 of screen
     const SHEET_PEEK = 72;      // px — just the handle strip visible
-    const SHEET_OPEN = "33vh";  // 1/3 of screen for all open states
+    const SHEET_OPEN = "50vh";  // 1/2 of screen for all open states
     const sheetHidden = mobileSheet === null;
 
     return (
