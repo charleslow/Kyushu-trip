@@ -123,7 +123,7 @@ export default function Home() {
           if (window.innerWidth < 768) {
             const screenH = window.innerHeight;
             const dy = Math.round(screenH / 2 - screenH * (2 / 9));
-            setTimeout(() => map.panBy(0, -dy), 50);
+            setTimeout(() => map.panBy(0, dy), 50);
           }
         });
 
@@ -215,13 +215,13 @@ export default function Home() {
     // visible map height = 2/3 of screen; target = 1/3 of that from top
     // = window.innerHeight * 2/3 * 1/3 = window.innerHeight * 2/9
     // screen centre = window.innerHeight / 2
-    // panBy y = (screen_centre - target_y) — positive pans map up, moving marker up
+    // positive panBy y = pan map down = marker moves up
     const screenH = window.innerHeight;
     const targetY = screenH * (2 / 9);          // 1/3 from top of visible area
     const centreY = screenH / 2;                 // where panTo puts the marker
     const dy = Math.round(centreY - targetY);    // how many px to pan the map down
     // Small delay so panTo finishes before panBy
-    setTimeout(() => map.panBy(0, -dy), 50);
+    setTimeout(() => map.panBy(0, dy), 50);
   }, []);
 
   // ─── Navigate between locations with arrows ──────────────────────────────
