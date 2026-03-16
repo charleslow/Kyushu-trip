@@ -119,6 +119,10 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans, 'Source Sans 3', system-ui, sans-serif);
