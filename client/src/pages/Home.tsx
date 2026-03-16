@@ -174,7 +174,7 @@ export default function Home() {
   const handleDaySelect = (day: DayItinerary) => {
     setSelectedDay(day);
     setFilterCategory(null);
-    if (isMobile) setMobileSheet("locations");
+    // On mobile, stay on day view so user can browse summaries; tap "Places" to advance
   };
 
   const handleLocationClick = (location: Location) => {
@@ -414,11 +414,78 @@ export default function Home() {
     );
   };
 
+  // ─── Mobile sheet swipe gesture ────────────────────────────────────────────
+  type SheetSnap = "peek" | "half" | "full";
+  const [sheetSnap, setSheetSnap] = useState<SheetSnap>("half");
+  const touchStartY = useRef(0);
+  const touchStartSnap = useRef<SheetSnap>("half");
+  const sheetRef = useRef<HTMLDivElement>(null);
+
+  const SNAP_PEEK = 72;   // px
+  const SNAP_HALF = Math.round(window.innerHeight * 0.5);   // 50vh
+  const SNAP_FULL = Math.round(window.innerHeight * 0.88);  // 88vh
+
+  const snapToHeight = (snap: SheetSnap) => {
+    switch (snap) {
+      case "peek": return SNAP_PEEK;
+      case "half": return SNAP_HALF;
+      case "full": return SNAP_FULL;
+    }
+  };
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+    touchStartSnap.current = sheetSnap;
+    if (sheetRef.current) {
+      sheetRef.current.style.transition = "none";
+    }
+  }, [sheetSnap]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!sheetRef.current) return;
+    const dy = touchStartY.current - e.touches[0].clientY; // positive = swipe up
+    const startH = snapToHeight(touchStartSnap.current);
+    const newH = Math.max(SNAP_PEEK, Math.min(SNAP_FULL, startH + dy));
+    sheetRef.current.style.height = `${newH}px`;
+  }, [SNAP_PEEK, SNAP_FULL]);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!sheetRef.current) return;
+    sheetRef.current.style.transition = "height 0.35s cubic-bezier(0.32, 0.72, 0, 1)";
+    const dy = touchStartY.current - e.changedTouches[0].clientY;
+    const startH = snapToHeight(touchStartSnap.current);
+    const currentH = startH + dy;
+    // Snap to nearest
+    const snaps: [SheetSnap, number][] = [["peek", SNAP_PEEK], ["half", SNAP_HALF], ["full", SNAP_FULL]];
+    let best: SheetSnap = "half";
+    let bestDist = Infinity;
+    for (const [name, h] of snaps) {
+      const dist = Math.abs(currentH - h);
+      if (dist < bestDist) { bestDist = dist; best = name; }
+    }
+    // If strong swipe (>80px), bias direction
+    if (Math.abs(dy) > 80) {
+      if (dy > 0 && touchStartSnap.current === "peek") best = "half";
+      else if (dy > 0 && touchStartSnap.current === "half") best = "full";
+      else if (dy < 0 && touchStartSnap.current === "full") best = "half";
+      else if (dy < 0 && touchStartSnap.current === "half") best = "peek";
+    }
+    setSheetSnap(best);
+    sheetRef.current.style.height = `${snapToHeight(best)}px`;
+    // Sync sheet state with snap
+    if (best === "peek") setMobileSheet(null);
+    else if (mobileSheet === null) setMobileSheet("day");
+  }, [SNAP_PEEK, SNAP_HALF, SNAP_FULL, mobileSheet]);
+
+  // Keep snap in sync when mobileSheet changes programmatically
+  useEffect(() => {
+    if (mobileSheet === null) setSheetSnap("peek");
+    else if (sheetSnap === "peek") setSheetSnap("half");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mobileSheet]);
+
   // ─── MOBILE LAYOUT ──────────────────────────────────────────────────────────
   if (isMobile) {
-    // Sheet height constants — all content states use exactly 1/2 of screen
-    const SHEET_PEEK = 72;      // px — just the handle strip visible
-    const SHEET_OPEN = "50vh";  // 1/2 of screen for all open states
     const sheetHidden = mobileSheet === null;
 
     return (
@@ -429,10 +496,11 @@ export default function Home() {
           initialCenter={itinerary[0].mapCenter}
           initialZoom={itinerary[0].mapZoom}
           onMapReady={handleMapReady}
+          isMobile
         />
         {/* ── Mobile Header ─────────────────────────────────────────── */}
-        {/* Minimal floating header — no background gradient */}
-        <div className="absolute top-0 left-0 right-0 z-20 px-4 pt-3 pb-2 flex items-center justify-between pointer-events-none">
+        {/* Minimal floating header — safe area aware */}
+        <div className="absolute top-0 left-0 right-0 z-20 px-4 pb-2 flex items-center justify-between pointer-events-none" style={{ paddingTop: "max(12px, env(safe-area-inset-top))" }}>
           <div className="pointer-events-auto">
             <h1 className="text-white font-bold text-sm leading-tight drop-shadow-md" style={{ fontFamily: "'Playfair Display', Georgia, serif", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
               Kyushu Family Trip 2026
@@ -444,22 +512,28 @@ export default function Home() {
         </div>
 
         {/* ── Mobile Bottom Sheet ───────────────────────────────────── */}
-        {/* Sheet container — always rendered, height driven by state */}
+        {/* Sheet container — swipe-enabled with 3 snap points */}
         <div
-          className="absolute left-0 right-0 bottom-0 z-30 flex flex-col"
+          ref={sheetRef}
+          className="absolute left-0 right-0 bottom-0 z-30 flex flex-col mobile-safe-bottom"
           style={{
             background: "rgba(247, 244, 239, 0.98)",
             backdropFilter: "blur(16px)",
             borderRadius: "20px 20px 0 0",
             boxShadow: "0 -8px 32px rgba(0,0,0,0.2)",
             transition: "height 0.35s cubic-bezier(0.32, 0.72, 0, 1)",
-            height: sheetHidden ? `${SHEET_PEEK}px` : SHEET_OPEN,
+            height: `${snapToHeight(sheetSnap)}px`,
             maxHeight: "88vh",
             overflow: "hidden",
           }}
         >
-          {/* ── Handle row: drag handle + hide/show button ─────────── */}
-          <div className="flex items-center justify-between px-4 pt-3 pb-1 flex-shrink-0">
+          {/* ── Handle row: drag handle + hide/show — swipeable ───── */}
+          <div
+            className="flex items-center justify-between px-4 pt-3 pb-1 flex-shrink-0 no-select"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             {/* Left: back/context button */}
             <div className="w-8">
               {!sheetHidden && mobileSheet === "detail" && (
@@ -487,7 +561,10 @@ export default function Home() {
             <div className="w-10 h-1 rounded-full bg-[#1A2744]/20" />
             {/* Right: hide / show button */}
             <button
-              onClick={() => setMobileSheet(sheetHidden ? "day" : null)}
+              onClick={() => {
+                if (sheetHidden) { setMobileSheet("day"); setSheetSnap("half"); }
+                else { setMobileSheet(null); setSheetSnap("peek"); }
+              }}
               className="w-8 h-8 flex items-center justify-center rounded-full text-[#6B5A48] bg-[#1A2744]/08"
               title={sheetHidden ? "Show panel" : "Hide panel"}
             >
@@ -502,7 +579,7 @@ export default function Home() {
           {/* ── Day picker ───────────────────────────────────────── */}
           {mobileSheet === "day" && (
             <div className="flex-1 overflow-y-auto scrollbar-light">
-              {/* Current day summary */}
+              {/* Current day summary — scrollable with highlights */}
               <div className="px-4 pb-3 border-b border-[#1A2744]/10">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex-1 min-w-0">
@@ -510,7 +587,7 @@ export default function Home() {
                     <h2 className="text-[#1A2744] text-base font-bold" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                       {selectedDay.title}
                     </h2>
-                    <p className="text-[#6B5A48] text-xs mt-0.5 truncate">{selectedDay.subtitle}</p>
+                    <p className="text-[#6B5A48] text-xs mt-0.5">{selectedDay.subtitle}</p>
                   </div>
                   <button
                     onClick={() => setMobileSheet("locations")}
@@ -521,6 +598,21 @@ export default function Home() {
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
                   </button>
                 </div>
+                {/* Region */}
+                <p className="text-[#6B5A48] text-xs mb-2">📍 {selectedDay.region}</p>
+                {/* Highlights */}
+                {selectedDay.highlights && selectedDay.highlights.length > 0 && (
+                  <div className="mb-2">
+                    <ul className="space-y-1">
+                      {selectedDay.highlights.map((h, i) => (
+                        <li key={i} className="flex items-start gap-2 text-[#4A3728] text-xs leading-relaxed">
+                          <span className="text-[#C4622D] flex-shrink-0 mt-0.5">•</span>
+                          <span>{h}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 {/* Tips */}
                 <div className="flex gap-2 bg-[#FFF8F0] rounded-lg p-2.5 border border-[#C4622D]/15">
                   <span className="text-[#C4622D] text-sm flex-shrink-0">💡</span>
