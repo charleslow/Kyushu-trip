@@ -134,7 +134,7 @@ export function MapView({
       fullscreenControl: !isMobile,
       zoomControl: true,
       streetViewControl: !isMobile,
-      zoomControlOptions: isMobile ? { position: 3 /* RIGHT_TOP */ } : undefined,
+      zoomControlOptions: isMobile ? { position: google.maps.ControlPosition.RIGHT_TOP } : undefined,
       mapId: "DEMO_MAP_ID",
     });
     if (onMapReady) {
