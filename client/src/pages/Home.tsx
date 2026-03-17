@@ -598,9 +598,9 @@ export default function Home() {
 
           {/* ── Day picker ───────────────────────────────────────── */}
           {mobileSheet === "day" && (
-            <div className="flex-1 overflow-y-auto scrollbar-light">
-              {/* Current day summary — scrollable with highlights */}
-              <div key={selectedDay.id} className="px-4 pb-3 border-b border-[#1A2744]/10 animate-fade-in">
+            <div className="flex flex-col flex-1 overflow-hidden">
+              {/* Current day summary — fixed at top */}
+              <div key={selectedDay.id} className="px-4 pb-3 border-b border-[#1A2744]/10 animate-fade-in flex-shrink-0">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex-1 min-w-0">
                     <p className="text-[#6B5A48] text-xs uppercase tracking-widest font-medium">{selectedDay.dayLabel} · {selectedDay.date}</p>
@@ -640,64 +640,66 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Day list — vertical, full-width tap targets */}
-              <div className="px-4 pt-2 pb-1">
-                <p className="text-[#6B5A48] text-xs uppercase tracking-widest font-medium mb-2">Choose a Day</p>
-              </div>
-              {itinerary.map((day, idx) => {
-                const isSelected = day.id === selectedDay.id;
-                const dayCats = Array.from(new Set(day.locations.map(l => l.category))).slice(0, 4);
-                return (
-                  <button
-                    key={day.id}
-                    onClick={() => handleDaySelect(day)}
-                    className="w-full text-left px-4 py-3 flex items-center gap-3 transition-all"
-                    style={{
-                      background: isSelected ? "rgba(196,98,45,0.1)" : "transparent",
-                      borderLeft: isSelected ? "3px solid #C4622D" : "3px solid transparent",
-                    }}
-                  >
-                    <div
-                      className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold"
+              {/* Day list — scrollable below fixed summary */}
+              <div className="flex-1 overflow-y-auto scrollbar-light">
+                <div className="px-4 pt-2 pb-1">
+                  <p className="text-[#6B5A48] text-xs uppercase tracking-widest font-medium mb-2">Choose a Day</p>
+                </div>
+                {itinerary.map((day, idx) => {
+                  const isSelected = day.id === selectedDay.id;
+                  const dayCats = Array.from(new Set(day.locations.map(l => l.category))).slice(0, 4);
+                  return (
+                    <button
+                      key={day.id}
+                      onClick={() => handleDaySelect(day)}
+                      className="w-full text-left px-4 py-3 flex items-center gap-3 transition-all"
                       style={{
-                        background: isSelected ? "#C4622D" : "rgba(26,39,68,0.08)",
-                        color: isSelected ? "white" : "#6B5A48",
+                        background: isSelected ? "rgba(196,98,45,0.1)" : "transparent",
+                        borderLeft: isSelected ? "3px solid #C4622D" : "3px solid transparent",
                       }}
-                    >{idx + 1}</div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[#6B5A48] text-xs">{day.date}</span>
-                        <div className="flex gap-0.5">
-                          {dayCats.map(cat => (
-                            <span key={cat} style={{ color: categoryColors[cat] }} className="text-xs">{categoryEmoji[cat]}</span>
-                          ))}
+                    >
+                      <div
+                        className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold"
+                        style={{
+                          background: isSelected ? "#C4622D" : "rgba(26,39,68,0.08)",
+                          color: isSelected ? "white" : "#6B5A48",
+                        }}
+                      >{idx + 1}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[#6B5A48] text-xs">{day.date}</span>
+                          <div className="flex gap-0.5">
+                            {dayCats.map(cat => (
+                              <span key={cat} style={{ color: categoryColors[cat] }} className="text-xs">{categoryEmoji[cat]}</span>
+                            ))}
+                          </div>
                         </div>
+                        <p className="text-[#1A2744] text-sm font-semibold leading-tight mt-0.5"
+                          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                          {day.title}
+                        </p>
+                        <p className="text-[#6B5A48] text-xs truncate">{day.subtitle}</p>
                       </div>
-                      <p className="text-[#1A2744] text-sm font-semibold leading-tight mt-0.5"
-                        style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-                        {day.title}
-                      </p>
-                      <p className="text-[#6B5A48] text-xs truncate">{day.subtitle}</p>
-                    </div>
-                    {isSelected && (
-                      <svg className="flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C4622D" strokeWidth="2.5">
-                        <polyline points="9 18 15 12 9 6" />
-                      </svg>
-                    )}
-                  </button>
-                );
-              })}
+                      {isSelected && (
+                        <svg className="flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C4622D" strokeWidth="2.5">
+                          <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                      )}
+                    </button>
+                  );
+                })}
 
-              {/* Legend */}
-              <div className="px-4 pt-2 pb-6 border-t border-[#1A2744]/10 mt-2">
-                <p className="text-[#6B5A48] text-xs uppercase tracking-widest font-medium mb-2">Legend</p>
-                <div className="grid grid-cols-3 gap-x-2 gap-y-1.5">
-                  {Object.entries(categoryLabels).map(([cat, label]) => (
-                    <div key={cat} className="flex items-center gap-1.5">
-                      <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: categoryColors[cat as keyof typeof categoryColors] }} />
-                      <span className="text-[#6B5A48] text-xs">{label}</span>
-                    </div>
-                  ))}
+                {/* Legend */}
+                <div className="px-4 pt-2 pb-6 border-t border-[#1A2744]/10 mt-2">
+                  <p className="text-[#6B5A48] text-xs uppercase tracking-widest font-medium mb-2">Legend</p>
+                  <div className="grid grid-cols-3 gap-x-2 gap-y-1.5">
+                    {Object.entries(categoryLabels).map(([cat, label]) => (
+                      <div key={cat} className="flex items-center gap-1.5">
+                        <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: categoryColors[cat as keyof typeof categoryColors] }} />
+                        <span className="text-[#6B5A48] text-xs">{label}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
