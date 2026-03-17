@@ -418,12 +418,27 @@ export default function Home() {
   type SheetSnap = "peek" | "half" | "full";
   const [sheetSnap, setSheetSnap] = useState<SheetSnap>("half");
   const touchStartY = useRef(0);
+  const touchStartTime = useRef(0);
   const touchStartSnap = useRef<SheetSnap>("half");
   const sheetRef = useRef<HTMLDivElement>(null);
 
   const SNAP_PEEK = 72;   // px
-  const SNAP_HALF = Math.round(window.innerHeight * 0.5);   // 50vh
-  const SNAP_FULL = Math.round(window.innerHeight * 0.88);  // 88vh
+  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  useEffect(() => {
+    const onResize = () => setViewportHeight(window.innerHeight);
+    window.addEventListener("resize", onResize);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", onResize);
+    }
+    return () => {
+      window.removeEventListener("resize", onResize);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", onResize);
+      }
+    };
+  }, []);
+  const SNAP_HALF = Math.round(viewportHeight * 0.5);   // 50vh
+  const SNAP_FULL = Math.round(viewportHeight * 0.88);  // 88vh
 
   const snapToHeight = (snap: SheetSnap) => {
     switch (snap) {
@@ -435,6 +450,7 @@ export default function Home() {
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     touchStartY.current = e.touches[0].clientY;
+    touchStartTime.current = Date.now();
     touchStartSnap.current = sheetSnap;
     if (sheetRef.current) {
       sheetRef.current.style.transition = "none";
@@ -453,6 +469,8 @@ export default function Home() {
     if (!sheetRef.current) return;
     sheetRef.current.style.transition = "height 0.35s cubic-bezier(0.32, 0.72, 0, 1)";
     const dy = touchStartY.current - e.changedTouches[0].clientY;
+    const elapsed = Math.max(1, Date.now() - touchStartTime.current);
+    const velocity = dy / elapsed; // px/ms, positive = swipe up
     const startH = snapToHeight(touchStartSnap.current);
     const currentH = startH + dy;
     // Snap to nearest
@@ -463,12 +481,14 @@ export default function Home() {
       const dist = Math.abs(currentH - h);
       if (dist < bestDist) { bestDist = dist; best = name; }
     }
-    // If strong swipe (>80px), bias direction
-    if (Math.abs(dy) > 80) {
-      if (dy > 0 && touchStartSnap.current === "peek") best = "half";
-      else if (dy > 0 && touchStartSnap.current === "half") best = "full";
-      else if (dy < 0 && touchStartSnap.current === "full") best = "half";
-      else if (dy < 0 && touchStartSnap.current === "half") best = "peek";
+    // Fast flick (velocity > 0.4 px/ms) or strong distance (>80px) biases direction
+    const isFlick = Math.abs(velocity) > 0.4;
+    if (isFlick || Math.abs(dy) > 80) {
+      const direction = isFlick ? Math.sign(velocity) : Math.sign(dy);
+      if (direction > 0 && touchStartSnap.current === "peek") best = "half";
+      else if (direction > 0 && touchStartSnap.current === "half") best = "full";
+      else if (direction < 0 && touchStartSnap.current === "full") best = "half";
+      else if (direction < 0 && touchStartSnap.current === "half") best = "peek";
     }
     setSheetSnap(best);
     sheetRef.current.style.height = `${snapToHeight(best)}px`;
@@ -580,7 +600,7 @@ export default function Home() {
           {mobileSheet === "day" && (
             <div className="flex-1 overflow-y-auto scrollbar-light">
               {/* Current day summary — scrollable with highlights */}
-              <div className="px-4 pb-3 border-b border-[#1A2744]/10">
+              <div key={selectedDay.id} className="px-4 pb-3 border-b border-[#1A2744]/10 animate-fade-in">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex-1 min-w-0">
                     <p className="text-[#6B5A48] text-xs uppercase tracking-widest font-medium">{selectedDay.dayLabel} · {selectedDay.date}</p>
@@ -869,7 +889,7 @@ export default function Home() {
         }}
       >
         {/* Day header */}
-        <div className="px-5 pt-16 pb-5 border-b border-[#1A2744]/10 flex-shrink-0"
+        <div key={selectedDay.id} className="px-5 pt-16 pb-5 border-b border-[#1A2744]/10 flex-shrink-0 animate-fade-in"
           style={{
             backgroundImage: selectedDay.heroImage
               ? `linear-gradient(to bottom, rgba(26,39,68,0.65) 0%, rgba(26,39,68,0.45) 100%), url(${selectedDay.heroImage})`
