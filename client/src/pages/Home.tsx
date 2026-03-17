@@ -36,6 +36,62 @@ interface MarkerRef {
   location: Location;
 }
 
+// ─── Smooth fly-to animation for Google Maps ─────────────────────────────────
+function smoothFlyTo(
+  map: google.maps.Map,
+  target: { lat: number; lng: number },
+  targetZoom: number,
+  duration = 800,
+): Promise<void> {
+  return new Promise((resolve) => {
+    const startCenter = map.getCenter();
+    const startZoom = map.getZoom();
+    if (!startCenter || startZoom == null) {
+      map.panTo(target);
+      map.setZoom(targetZoom);
+      resolve();
+      return;
+    }
+
+    const startLat = startCenter.lat();
+    const startLng = startCenter.lng();
+    const dLat = target.lat - startLat;
+    const dLng = target.lng - startLng;
+    const dZoom = targetZoom - startZoom;
+
+    // If barely moving, skip animation
+    if (Math.abs(dLat) < 0.0001 && Math.abs(dLng) < 0.0001 && Math.abs(dZoom) < 0.1) {
+      resolve();
+      return;
+    }
+
+    const start = performance.now();
+
+    // Ease-in-out cubic
+    const ease = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    function step(now: number) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const t = ease(progress);
+
+      const lat = startLat + dLat * t;
+      const lng = startLng + dLng * t;
+      const zoom = startZoom + dZoom * t;
+
+      map.moveCamera({ center: { lat, lng }, zoom });
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        resolve();
+      }
+    }
+
+    requestAnimationFrame(step);
+  });
+}
+
 // ─── useIsMobile hook ─────────────────────────────────────────────────────────
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
@@ -64,7 +120,7 @@ export default function Home() {
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<MarkerRef[]>([]);
   const routePolylineRef = useRef<google.maps.Polyline | null>(null);
-  const panToWithOffsetRef = useRef<(lat: number, lng: number, mobile?: boolean) => void>(() => {});
+  const panToWithOffsetRef = useRef<(lat: number, lng: number, zoom: number, mobile?: boolean) => void>(() => {});
 
   // ─── Clear markers ──────────────────────────────────────────────────────────
   const clearMarkers = useCallback(() => {
@@ -119,7 +175,7 @@ export default function Home() {
           setSelectedLocation(location);
           setDrawerOpen(true);
           setMobileSheet("detail");
-          panToWithOffsetRef.current(location.lat, location.lng, window.innerWidth < 768);
+          panToWithOffsetRef.current(location.lat, location.lng, 14, window.innerWidth < 768);
         });
 
         markersRef.current.push({ marker, location });
@@ -155,8 +211,7 @@ export default function Home() {
     if (!mapRef.current) return;
     setSelectedLocation(null);
     setDrawerOpen(false);
-    mapRef.current.panTo(selectedDay.mapCenter);
-    mapRef.current.setZoom(selectedDay.mapZoom);
+    smoothFlyTo(mapRef.current, selectedDay.mapCenter, selectedDay.mapZoom, 1000);
     placeMarkers(selectedDay, mapRef.current, null);
   }, [selectedDay, placeMarkers]);
 
@@ -182,9 +237,7 @@ export default function Home() {
     setDrawerOpen(true);
     setMobileSheet("detail");
     if (mapRef.current) {
-      mapRef.current.setZoom(14);
-      // On mobile, offset upward so marker sits above the bottom sheet
-      panToWithOffset(location.lat, location.lng, isMobile);
+      panToWithOffset(location.lat, location.lng, 14, isMobile);
     }
   };
 
@@ -200,23 +253,21 @@ export default function Home() {
   // target y = visibleHeight / 3  (1/3 from top of visible area)
   // current y = window.innerHeight / 2  (panTo puts it at screen centre)
   // panBy offset = target_y - current_y  (positive = pan down = marker moves up)
-  const panToWithOffset = useCallback((lat: number, lng: number, mobile = false) => {
+  const panToWithOffset = useCallback((lat: number, lng: number, zoom: number, mobile = false) => {
     const map = mapRef.current;
     if (!map) return;
-    // First pan to the location (centres it on full screen)
-    map.panTo({ lat, lng });
-    if (!mobile) return;
-    // Then shift: marker should sit at 1/3 from top of visible map (top 1/2 of screen)
-    // visible map height = 1/2 of screen; target = 1/3 of that from top
-    // = window.innerHeight * 1/2 * 1/3 = window.innerHeight * 1/6
-    // screen centre = window.innerHeight / 2
-    // positive panBy y = pan map down = marker moves up
-    const screenH = window.innerHeight;
-    const targetY = screenH * (1 / 6);          // 1/3 from top of visible area
-    const centreY = screenH / 2;                 // where panTo puts the marker
-    const dy = Math.round(centreY - targetY);    // how many px to pan the map down
-    // Small delay so panTo finishes before panBy
-    setTimeout(() => map.panBy(0, dy), 50);
+    if (!mobile) {
+      smoothFlyTo(map, { lat, lng }, zoom);
+      return;
+    }
+    // On mobile, fly to location then shift so marker sits above the bottom sheet
+    smoothFlyTo(map, { lat, lng }, zoom).then(() => {
+      const screenH = window.innerHeight;
+      const targetY = screenH * (1 / 6);
+      const centreY = screenH / 2;
+      const dy = Math.round(centreY - targetY);
+      map.panBy(0, dy);
+    });
   }, []);
   panToWithOffsetRef.current = panToWithOffset;
 
@@ -232,8 +283,7 @@ export default function Home() {
     setDrawerOpen(true);
     setMobileSheet("detail");
     if (mapRef.current) {
-      mapRef.current.setZoom(14);
-      panToWithOffset(next.lat, next.lng, isMobile);
+      panToWithOffset(next.lat, next.lng, 14, isMobile);
     }
   }, [filteredLocations, currentLocIndex, isMobile, panToWithOffset]);
 
