@@ -549,7 +549,7 @@ export default function Home() {
         >
           {/* ── Handle row: drag handle + hide/show — swipeable ───── */}
           <div
-            className="flex items-center justify-between px-4 pt-3 pb-1 flex-shrink-0 no-select"
+            className="flex items-center justify-between px-4 pt-4 pb-2 flex-shrink-0 no-select"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
@@ -578,7 +578,7 @@ export default function Home() {
               )}
             </div>
             {/* Centre: drag handle */}
-            <div className="w-10 h-1 rounded-full bg-[#1A2744]/20" />
+            <div className="w-12 h-1.5 rounded-full bg-[#1A2744]/30" />
             {/* Right: spacer to keep handle centred */}
             <div className="w-8" />
           </div>
