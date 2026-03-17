@@ -422,7 +422,7 @@ export default function Home() {
   const touchStartSnap = useRef<SheetSnap>("half");
   const sheetRef = useRef<HTMLDivElement>(null);
 
-  const SNAP_PEEK = 72;   // px
+  const SNAP_PEEK = 120;  // px — large enough to not conflict with mobile scroll-minimize
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   useEffect(() => {
     const onResize = () => setViewportHeight(window.innerHeight);
@@ -579,21 +579,8 @@ export default function Home() {
             </div>
             {/* Centre: drag handle */}
             <div className="w-10 h-1 rounded-full bg-[#1A2744]/20" />
-            {/* Right: hide / show button */}
-            <button
-              onClick={() => {
-                if (sheetHidden) { setMobileSheet("day"); setSheetSnap("half"); }
-                else { setMobileSheet(null); setSheetSnap("peek"); }
-              }}
-              className="w-8 h-8 flex items-center justify-center rounded-full text-[#6B5A48] bg-[#1A2744]/08"
-              title={sheetHidden ? "Show panel" : "Hide panel"}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                {sheetHidden
-                  ? <polyline points="18 15 12 9 6 15" />
-                  : <polyline points="6 9 12 15 18 9" />}
-              </svg>
-            </button>
+            {/* Right: spacer to keep handle centred */}
+            <div className="w-8" />
           </div>
 
           {/* ── Day picker ───────────────────────────────────────── */}
