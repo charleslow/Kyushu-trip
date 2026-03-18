@@ -241,6 +241,18 @@ export default function Home() {
     }
   };
 
+  const currentDayIndex = itinerary.findIndex(d => d.id === selectedDay.id);
+  const hasPrevDay = currentDayIndex > 0;
+  const hasNextDay = currentDayIndex < itinerary.length - 1;
+
+  const handlePrevDay = useCallback(() => {
+    if (hasPrevDay) handleDaySelect(itinerary[currentDayIndex - 1]);
+  }, [currentDayIndex, hasPrevDay]);
+
+  const handleNextDay = useCallback(() => {
+    if (hasNextDay) handleDaySelect(itinerary[currentDayIndex + 1]);
+  }, [currentDayIndex, hasNextDay]);
+
   const categories = Array.from(new Set(selectedDay.locations.map((l) => l.category)));
   const filteredLocations = filterCategory
     ? selectedDay.locations.filter(l => l.category === filterCategory)
@@ -362,6 +374,39 @@ export default function Home() {
             </button>
           );
         })}
+
+        {/* Day navigation */}
+        <div className="px-4 py-4 flex items-center justify-between gap-2 border-t border-[#1A2744]/10">
+          <button
+            onClick={handlePrevDay}
+            disabled={!hasPrevDay}
+            className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-full transition-all"
+            style={{
+              background: hasPrevDay ? "rgba(26,39,68,0.08)" : "rgba(26,39,68,0.03)",
+              color: hasPrevDay ? "#1A2744" : "#C0B5A8",
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            {hasPrevDay ? itinerary[currentDayIndex - 1].dayLabel : "Prev"}
+          </button>
+          <span className="text-[#6B5A48] text-xs">{selectedDay.dayLabel}</span>
+          <button
+            onClick={handleNextDay}
+            disabled={!hasNextDay}
+            className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-full transition-all"
+            style={{
+              background: hasNextDay ? "#C4622D" : "rgba(26,39,68,0.03)",
+              color: hasNextDay ? "white" : "#C0B5A8",
+            }}
+          >
+            {hasNextDay ? itinerary[currentDayIndex + 1].dayLabel : "Next"}
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+        </div>
       </div>
     </>
   );
