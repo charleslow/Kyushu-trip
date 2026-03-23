@@ -1,0 +1,412 @@
+{
+  "days": [
+    {
+      "day": 1,
+      "date": "2026-04-15",
+      "dayOfWeek": "Wednesday",
+      "periods": [
+        {
+          "period": "morning",
+          "items": [
+            { "type": "place", "name": "Changi Airport", "description": "Depart SG" },
+            { "type": "place", "name": "Flight SG to KIX" }
+          ]
+        },
+        {
+          "period": "midday",
+          "items": [
+            { "type": "place", "name": "Flight SG to KIX", "description": "On flight" }
+          ]
+        },
+        {
+          "period": "afternoon",
+          "items": [
+            { "type": "place", "name": "Kansai International Airport", "description": "Arrive KIX 4.10pm" },
+            { "type": "place", "name": "Rinku-Town Station", "description": "Train 1 stop from KIX, Exit 5" },
+            { "type": "place", "name": "OMO Kansai Airport", "description": "Hotel check-in" }
+          ],
+          "notes": [
+            "Get ICOCA card"
+          ]
+        },
+        {
+          "period": "evening",
+          "items": [
+            { "type": "place", "name": "OMO Dining", "description": "Dinner in hotel, 6-9pm" }
+          ],
+          "notes": [
+            "Buy milk and snacks from Lawson in the hotel"
+          ]
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2026-04-16",
+      "dayOfWeek": "Thursday",
+      "periods": [
+        {
+          "period": "morning",
+          "items": [
+            { "type": "place", "name": "OMO Dining", "description": "Breakfast buffet in hotel, 6-10am" },
+            { "type": "place", "name": "Shin-Osaka Station", "description": "Booked 8.15am Klook Driver" },
+            { "type": "place", "name": "Shinkansen Mizuho 607", "description": "Depart 9.54am" }
+          ],
+          "notes": [
+            "Buy lunch before shinkansen"
+          ]
+        },
+        {
+          "period": "midday",
+          "items": [
+            { "type": "place", "name": "Shinkansen Mizuho 607", "description": "On shinkansen, arrive Kumamoto 12.59pm" }
+          ]
+        },
+        {
+          "period": "afternoon",
+          "items": [
+            { "type": "place", "name": "Drug Eleven (Higo Yokamon Market)", "description": "In Kumamoto Station" },
+            { "type": "place", "name": "Car Rental Pickup", "description": "Collect car" },
+            { "type": "place", "name": "Kumamoto Castle", "description": "9am-5pm (last admission main castle 4.30pm, others 4pm)" }
+          ],
+          "notes": [
+            "Buy diapers from Drug Eleven"
+          ]
+        },
+        {
+          "period": "evening",
+          "items": [
+            {
+              "type": "option",
+              "options": [
+                { "name": "Konbini dinner" },
+                { "name": "Katsuretsu Tei Shinshigai", "description": "Sunroad Shinshigai, near Kumamoto Castle" }
+              ]
+            },
+            { "type": "place", "name": "Drive to Hakushu", "description": "1.5 hours" }
+          ],
+          "notes": [
+            "Pick up milk, breakfast, snacks from Konbini or Lawsons in Sunroad Shinshigai before heading to Hakushu"
+          ]
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2026-04-17",
+      "dayOfWeek": "Friday",
+      "periods": [
+        {
+          "period": "morning",
+          "items": [
+            { "type": "place", "name": "Drive to Takachiho", "description": "7.45am, 1.5 hours from Hakushu" },
+            { "type": "place", "name": "Takachiho Amaterasu Railway", "description": "9.40am or 11am rides" },
+            { "type": "place", "name": "Takachiho Gorge", "description": "Oshioi Parking Lot / Araragi Parking Lot" }
+          ],
+          "notes": [
+            "Breakfast in Hakushu / on the car"
+          ]
+        },
+        {
+          "period": "midday",
+          "items": [
+            { "type": "place", "name": "Cafe Takachiho Base", "description": "Maybe - bigger area but limited menu options" },
+            { "type": "place", "name": "Drive back to Aso", "description": "1hr 10min to Minami Aso" }
+          ]
+        },
+        {
+          "period": "afternoon",
+          "items": [
+            { "type": "place", "name": "Aso Kenkou Nouen Farm", "description": "Strawberry picking, 9am-5pm" },
+            { "type": "place", "name": "Takoyaki / Manjuu place", "description": "Near Minami Aso" }
+          ],
+          "notes": [
+            "TO BOOK: 3pm strawberry picking",
+            "Get groceries on the way for dinner"
+          ]
+        },
+        {
+          "period": "evening",
+          "items": []
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2026-04-18",
+      "dayOfWeek": "Saturday",
+      "periods": [
+        {
+          "period": "morning",
+          "items": [],
+          "notes": [
+            "Breakfast in Hakushu",
+            "Jerlene BSF 8AM-10AM (Japan time)"
+          ]
+        },
+        {
+          "period": "midday",
+          "items": []
+        },
+        {
+          "period": "afternoon",
+          "items": [
+            { "type": "place", "name": "Marugo Donuts", "description": "11am-5pm" }
+          ],
+          "notes": [
+            "Laundry day",
+            "Nap in Airbnb"
+          ]
+        },
+        {
+          "period": "evening",
+          "items": []
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2026-04-19",
+      "dayOfWeek": "Sunday",
+      "periods": [
+        {
+          "period": "morning",
+          "items": [
+            { "type": "place", "name": "Nakadake Crater", "description": "Drive up from Aso Sanjo Terminal" },
+            { "type": "place", "name": "Kusasenrigahama", "description": "Kusasenri Parking Lot" },
+            { "type": "place", "name": "Kishimadake Hike", "description": "Paved, steps, 1.4km" },
+            { "type": "place", "name": "Kusasenri Grassland-Furubochu Walking Trail" }
+          ],
+          "notes": [
+            "Breakfast in Hakushu",
+            "Check weather, bring masks for crater"
+          ]
+        },
+        {
+          "period": "midday",
+          "items": [
+            {
+              "type": "option",
+              "options": [
+                { "name": "Soba Dojo", "description": "Opens 10am" },
+                { "name": "Local Food Hachoume Shokudou", "description": "Opens 11.30am-2.30pm" }
+              ]
+            }
+          ],
+          "notes": [
+            "Nap in Airbnb"
+          ]
+        },
+        {
+          "period": "afternoon",
+          "items": [
+            { "type": "place", "name": "Uchinomaki Family Park (Aso Viva)" },
+            { "type": "place", "name": "Daikanbo" }
+          ]
+        },
+        {
+          "period": "evening",
+          "items": []
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2026-04-20",
+      "dayOfWeek": "Monday",
+      "periods": [
+        {
+          "period": "morning",
+          "items": [
+            { "type": "place", "name": "Chojabaru Visitor's Centre / Tadewara Marsh", "description": "8.30am drive, 1 hour" },
+            { "type": "place", "name": "Kuju Yume Otsuribashi", "description": "Suspension bridge" }
+          ],
+          "notes": [
+            "Check-out 10am"
+          ]
+        },
+        {
+          "period": "midday",
+          "items": [
+            {
+              "type": "option",
+              "options": [
+                { "name": "Kasuga Udon", "description": "30 min from Chojabaru / Suspension bridge" },
+                { "name": "Restaurant Aoyama", "description": "Has a Lawson next door, can buy breakfast/snacks for the farmstay" }
+              ]
+            },
+            { "type": "place", "name": "Drive to Farm Stay", "description": "1 hour" }
+          ]
+        },
+        {
+          "period": "afternoon",
+          "items": []
+        },
+        {
+          "period": "evening",
+          "items": [
+            { "type": "place", "name": "Farm Stay", "description": "Dinner in farmstay" }
+          ]
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2026-04-21",
+      "dayOfWeek": "Tuesday",
+      "periods": [
+        {
+          "period": "morning",
+          "items": [],
+          "notes": [
+            "Breakfast in farmstay (own breakfast?)"
+          ]
+        },
+        {
+          "period": "midday",
+          "items": [],
+          "notes": [
+            "Lunch in farmstay",
+            "Nap in Airbnb"
+          ]
+        },
+        {
+          "period": "afternoon",
+          "items": []
+        },
+        {
+          "period": "evening",
+          "items": [
+            { "type": "place", "name": "Farm Stay", "description": "Dinner in farmstay" }
+          ],
+          "notes": [
+            "Jerlene BSF 8.50PM-10.30PM (Japan time)"
+          ]
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2026-04-22",
+      "dayOfWeek": "Wednesday",
+      "periods": [
+        {
+          "period": "morning",
+          "items": [
+            { "type": "place", "name": "Kyushu Wildlife Park African Safari", "description": "9am drive, 51 min from farmstay" }
+          ],
+          "notes": [
+            "Breakfast in farmstay (own breakfast?)",
+            "Check-out 10am"
+          ]
+        },
+        {
+          "period": "midday",
+          "items": [
+            { "type": "place", "name": "Family Restaurant Salvia", "description": "At the Safari" }
+          ]
+        },
+        {
+          "period": "afternoon",
+          "items": [
+            {
+              "type": "option",
+              "options": [
+                { "name": "Jumonji Viewpoint" },
+                { "name": "Beppu Ropeway" }
+              ]
+            },
+            { "type": "place", "name": "Sunflower Ferry Terminal", "description": "Check-in 5.45pm" }
+          ],
+          "notes": [
+            "Buy provisions for the ferry (breakfast for next day) - Lawson/Family Mart near ferry terminal",
+            "Chux drop everyone and luggage at Sunflower terminal, return car at Nissan, walk over (10-15min)",
+            "Ask Driver if can change drop off to OMO Kansai Airport hotel"
+          ]
+        },
+        {
+          "period": "evening",
+          "items": [
+            { "type": "place", "name": "Sunflower Ferry", "description": "Dinner buffet 5.45-9pm, 6.45pm departure" }
+          ]
+        }
+      ]
+    },
+    {
+      "day": 9,
+      "date": "2026-04-23",
+      "dayOfWeek": "Thursday",
+      "periods": [
+        {
+          "period": "morning",
+          "items": [
+            { "type": "place", "name": "Sunflower Ferry", "description": "Arrive 6.35am" },
+            { "type": "place", "name": "OMO Kansai Airport", "description": "Drop off baggage, Klook Driver 7.30am pickup" },
+            { "type": "place", "name": "Rinku Park / Ferris Wheel" },
+            { "type": "place", "name": "Rinku Premium Outlet Mall / Don Quijote" }
+          ],
+          "notes": [
+            "Breakfast 5.30-6.15am on ferry, or buy from conbini at ferry terminal"
+          ]
+        },
+        {
+          "period": "midday",
+          "items": [],
+          "notes": [
+            "Lunch in Rinku area",
+            "Hotel nap?"
+          ]
+        },
+        {
+          "period": "afternoon",
+          "items": [],
+          "notes": [
+            "Laundry?"
+          ]
+        },
+        {
+          "period": "evening",
+          "items": [
+            { "type": "place", "name": "OMO Dining", "description": "Dinner in hotel, 6-9pm" }
+          ]
+        }
+      ]
+    },
+    {
+      "day": 10,
+      "date": "2026-04-24",
+      "dayOfWeek": "Friday",
+      "periods": [
+        {
+          "period": "morning",
+          "items": [
+            { "type": "place", "name": "OMO Dining", "description": "Breakfast in hotel, 6-10am" },
+            { "type": "place", "name": "Flight KIX to SG" }
+          ],
+          "notes": [
+            "Booked 8am airport shuttle"
+          ]
+        },
+        {
+          "period": "midday",
+          "items": [
+            { "type": "place", "name": "Flight KIX to SG", "description": "On flight" }
+          ]
+        },
+        {
+          "period": "afternoon",
+          "items": [
+            { "type": "place", "name": "Changi Airport", "description": "Arrive SIN 4.30pm" }
+          ]
+        },
+        {
+          "period": "evening",
+          "items": [],
+          "notes": [
+            "Order food / eat at airport"
+          ]
+        }
+      ]
+    }
+  ]
+}

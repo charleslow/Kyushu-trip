@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Trip Itinerary",
+  "type": "object",
+  "required": ["days"],
+  "properties": {
+    "days": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["day", "date", "dayOfWeek", "periods"],
+        "properties": {
+          "day": { "type": "integer" },
+          "date": { "type": "string", "format": "date" },
+          "dayOfWeek": { "type": "string" },
+          "periods": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["period", "items"],
+              "properties": {
+                "period": {
+                  "type": "string",
+                  "enum": ["morning", "midday", "afternoon", "evening"]
+                },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["type"],
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "type": { "const": "place" },
+                          "name": { "type": "string" },
+                          "description": { "type": "string" }
+                        },
+                        "required": ["type", "name"]
+                      },
+                      {
+                        "properties": {
+                          "type": { "const": "option" },
+                          "options": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": ["name"],
+                              "properties": {
+                                "name": { "type": "string" },
+                                "description": { "type": "string" }
+                              }
+                            }
+                          }
+                        },
+                        "required": ["type", "options"]
+                      }
+                    ]
+                  }
+                },
+                "notes": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
